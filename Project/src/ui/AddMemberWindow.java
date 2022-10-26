@@ -53,7 +53,7 @@ public class AddMemberWindow extends Stage implements LibWindow{
 	TextField stateTextField;
 	TextField zipCodeTextField;
 	TextField telePhoneTextField;
-
+	private Label errorMessageLabel = new Label("");
 	private boolean isInitialized = false;
 	private ControllerInterface sysController = new SystemController();
 	public boolean isInitialized() {
@@ -71,10 +71,10 @@ public class AddMemberWindow extends Stage implements LibWindow{
 	@Override
 	public void init() {
 		
-		this.setTitle("Add/Edit Member");
+		this.setTitle("Member Management");
 		GridPane grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
-		grid.setHgap(5);
+		grid.setHgap(10);
 		grid.setVgap(5);
 		grid.setPadding(new Insets(15, 15, 15, 15));
 		grid.setStyle(Constants.GRID_COLOR);
@@ -85,75 +85,82 @@ public class AddMemberWindow extends Stage implements LibWindow{
 		HBox labelBox = new HBox(10);
 		labelBox.setAlignment(Pos.CENTER);
 		labelBox.getChildren().add(label);
-		int row = 1;
-		grid.add(labelBox, 0, 0, 2, row);
-
-		Label isbnLabel = new Label("Member ID:");
-		grid.add(isbnLabel, 0, 1);
-
-		memberIDTextField = new NumberTextField();
-		grid.add(memberIDTextField, 1, row);
-
-		row++;
-		Label firstNameLabel = new Label("First Name:");
-		grid.add(firstNameLabel, 0, row);
-
-		firstNameTextField = new TextField();
-		grid.add(firstNameTextField, 1, row);
+		int row = 0;
+		grid.add(labelBox, 0, row, 4, 1);
 		
 		row++;
+		Label isbnLabel = new Label("Member ID:");
+		grid.add(isbnLabel, 0, row, 1, 1);
+
+		memberIDTextField = new NumberTextField();
+		grid.add(memberIDTextField, 1, row, 1, 1);
+		memberIDTextField.setMaxWidth(300);
+		
+		Label telephoneLabel = new Label("Telephone:");
+		grid.add(telephoneLabel, 2, row, 1, 1);
+
+		telePhoneTextField = new NumberTextField();
+		grid.add(telePhoneTextField, 3, row, 1, 1);
+		telePhoneTextField.setMaxWidth(200);
+		//telePhoneTextField.
+		
+		row++;
+		Label firstNameLabel = new Label("First Name:");
+		grid.add(firstNameLabel, 0, row, 1, 1);
+
+		firstNameTextField = new TextField();
+		grid.add(firstNameTextField, 1, row, 1, 1);
+		
 		Label lastNameLabel = new Label("Last Name:");
-		grid.add(lastNameLabel, 0, row);
+		grid.add(lastNameLabel, 2, row, 1, 1);
 
 		lastNameTextField = new TextField();
-		grid.add(lastNameTextField, 1, row);
+		grid.add(lastNameTextField, 3,row, 1, 1);
+		
 		
 		row++;
 		Label streetLabel = new Label("Street:");
-		grid.add(streetLabel, 0, row);
+		grid.add(streetLabel, 0, row, 1, 1);
 
 		streetTextField = new TextField();
-		grid.add(streetTextField, 1, row);
+		grid.add(streetTextField, 1, row, 1, 1);
 		
-		row++;
 		Label cityLabel = new Label("City:");
-		grid.add(cityLabel, 0, row);
+		grid.add(cityLabel, 2, row, 1, 1);
 
 		cityTextField = new TextField();
-		grid.add(cityTextField, 1, row);
+		grid.add(cityTextField, 3, row, 1, 1);
 		
 		row++;
 		Label stateLabel = new Label("State:");
-		grid.add(stateLabel, 0, row);
+		grid.add(stateLabel, 0, row, 1, 1);
 
 		stateTextField = new TextField();
-		grid.add(stateTextField, 1, row);
+		grid.add(stateTextField, 1, row, 1, 1);
 		
-		row++;//7
 		Label zipCodeLabel = new Label("Zip Code:");
-		grid.add(zipCodeLabel, 0, row);
+		grid.add(zipCodeLabel, 2, row, 1, 1);
 
-		zipCodeTextField = new NumberTextField();		
-		grid.add(zipCodeTextField, 1, row);
+		zipCodeTextField = new NumberTextField();
+		grid.add(zipCodeTextField, 3, row, 1, 1);	
+	
+		row++;		
 		
-		row++;//8
-		Label telephoneLabel = new Label("Telephone:");
-		grid.add(telephoneLabel, 0, row);
-
-		telePhoneTextField = new NumberTextField();
-		grid.add(telePhoneTextField, 1, row);
+		errorMessageLabel.setTextFill(Color.RED);
+		grid.add(errorMessageLabel, 0, row, 2, 1);
 		
 		Button saveBtn = new Button("Save");
 		saveBtn.setOnAction(new EventHandler<ActionEvent>() {
         	@Override
         	public void handle(ActionEvent e) {
+        		showErrorMessage("");
         		String memberId = memberIDTextField.getText().trim();
         		List<LibraryMember> libraryMembers = getLibraryMembers();
         		List<String> libraryMemberIds = libraryMembers.stream()        				
         				.map(x -> x.getMemberId())
         				.collect(Collectors.toList());
-        		if(libraryMemberIds.contains(memberId)) {
-        			new Alert(Alert.AlertType.WARNING, "Duplicate member id!").showAndWait();
+        		if(libraryMemberIds.contains(memberId)) {        			
+        			showErrorMessage("Member with this Id already exists.");
         			memberIDTextField.requestFocus();
         			return;
         		}
@@ -162,8 +169,8 @@ public class AddMemberWindow extends Stage implements LibWindow{
         				stateTextField.getText().trim(), zipCodeTextField.getText().trim());
         		LibraryMember newMember = new LibraryMember(memberIDTextField.getText().trim(), firstNameTextField.getText().trim(), 
         				lastNameTextField.getText().trim(), telePhoneTextField.getText().trim(), add);
-        		addNewMember(newMember);
-        		textFieldClear();
+        		boolean success = addNewMember(newMember);
+        		if(success==true) textFieldClear();        		
         		bindMemberToList(getLibraryMembers());
         	}
         });
@@ -178,6 +185,9 @@ public class AddMemberWindow extends Stage implements LibWindow{
         				lastNameTextField.getText().trim(), telePhoneTextField.getText().trim(), add);
         		addNewMember(newMember);
         		textFieldClear();
+        		memberIDTextField.setDisable(false);
+        		saveBtn.setDisable(false);
+        		editBtn.setDisable(true);
         		bindMemberToList(getLibraryMembers());
         	}
         });
@@ -186,44 +196,50 @@ public class AddMemberWindow extends Stage implements LibWindow{
         	@Override
         	public void handle(ActionEvent e) {        		
         		textFieldClear();
+        		memberIDTextField.setDisable(false);
+        		errorMessageLabel.setText("");
         		saveBtn.setDisable(false);	
 	        	editBtn.setDisable(true);
         		
         	}
         });
+		
+		
+		
 		HBox hbBtn = new HBox(10);
 		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
 		
 		hbBtn.getChildren().add(saveBtn);
 		hbBtn.getChildren().add(editBtn);
-		hbBtn.getChildren().add(clearBtn);
+		hbBtn.getChildren().add(clearBtn);		
 		
-		row++;//9
-		grid.add(hbBtn, 1, row);
+		grid.add(hbBtn, 2, row, 2, 1);
 		
 		HBox righttBox = new HBox(10);
 		righttBox.setAlignment(Pos.TOP_RIGHT);
 		
 		Label membersLabel = new Label("Members:");
-		righttBox.getChildren().add(membersLabel);
 		
-		TableColumn<LibraryMember, String> memberIDCol = new TableColumn<>("Member ID");
-		memberIDCol.setMinWidth(150);
+		row++;
+		grid.add(membersLabel, 0, row, 1, 1);
+		
+		TableColumn<LibraryMember, String> memberIDCol = new TableColumn<>("Member Id");
+		memberIDCol.setMinWidth(105);
 		memberIDCol.setCellValueFactory(new PropertyValueFactory<LibraryMember, String>("memberId"));
 		memberIDCol.setCellFactory(TextFieldTableCell.forTableColumn());
 		
 		TableColumn<LibraryMember, String> memberFirstNameCol = new TableColumn<>("First Name");
-		memberFirstNameCol.setMinWidth(150);
+		memberFirstNameCol.setMinWidth(110);
 		memberFirstNameCol.setCellValueFactory(new PropertyValueFactory<LibraryMember, String>("firstName"));
 		memberFirstNameCol.setCellFactory(TextFieldTableCell.forTableColumn());
 		
 		TableColumn<LibraryMember, String> memberLastNameCol = new TableColumn<>("Last Name");
-		memberLastNameCol.setMinWidth(150);
+		memberLastNameCol.setMinWidth(120);
 		memberLastNameCol.setCellValueFactory(new PropertyValueFactory<LibraryMember, String>("lastName"));
 		memberLastNameCol.setCellFactory(TextFieldTableCell.forTableColumn());
 		
 		TableColumn<LibraryMember, String> telephoneCol = new TableColumn<>("Telephone");
-		telephoneCol.setMinWidth(150);
+		telephoneCol.setMinWidth(110);
 		telephoneCol.setCellValueFactory(new PropertyValueFactory<LibraryMember, String>("telephone"));
 		telephoneCol.setCellFactory(TextFieldTableCell.forTableColumn());
 		
@@ -231,12 +247,14 @@ public class AddMemberWindow extends Stage implements LibWindow{
 		tableMemberView.getColumns().addAll(memberIDCol, memberFirstNameCol, memberLastNameCol, telephoneCol);
 		
 		righttBox.getChildren().add(tableMemberView);
-		row++;//10
-		grid.add(tableMemberView, 1, row);
+		row++;
+		grid.add(righttBox, 0, row, 4, 1);
 		
 		tableMemberView.setOnMouseClicked((MouseEvent event) -> {
+			showErrorMessage("");
 	        if(event.getButton().equals(MouseButton.PRIMARY)){
-	        	doSelectMember();
+	        	if(!doSelectMember()) return;
+	        	memberIDTextField.setDisable(true);
 	        	saveBtn.setDisable(true);	
 	        	editBtn.setDisable(false);
 	        	
@@ -258,59 +276,69 @@ public class AddMemberWindow extends Stage implements LibWindow{
 
 		Scene scene = new Scene(grid, bounds.getWidth()*0.55, bounds.getHeight()*0.955);
         setScene(scene);
-        //setMaximized(true);
 	}
-	private List<LibraryMember> getLibraryMembers() {
-		
-		//return sysController.getAllLibraryMembers();
+	
+	private List<LibraryMember> getLibraryMembers() {		
 		return sysController.getAllMemebers();
-
 	}
+	
 	private void bindMemberToList(List<LibraryMember> members) {
 		this.tableMemberView.getItems().clear();
 		this.tableMemberView.getItems().setAll(members);
 	}
-	private void addNewMember(LibraryMember newMember) {
+	
+	private boolean addNewMember(LibraryMember newMember) {
 		if(newMember.getMemberId().isEmpty()) {
-			new Alert(Alert.AlertType.WARNING, "Missing member id!").showAndWait();
+			System.out.println(newMember.getMemberId());
+			showErrorMessage("Missing member id!");
 			memberIDTextField.requestFocus();
-			return;
+			return false;
 		}
 		if(newMember.getFirstName().isEmpty()) {
-			new Alert(Alert.AlertType.WARNING, "Missing first name!").showAndWait();
+			showErrorMessage("Missing first name!");
 			firstNameTextField.requestFocus();
-			return;
+			return false;
+		}
+		if(newMember.getLastName().isEmpty()) {
+			showErrorMessage("Missing last name!");
+			lastNameTextField.requestFocus();
+			return false;
 		}
 		if(newMember.getAddress().getStreet().isEmpty()) {
-			new Alert(Alert.AlertType.WARNING, "Missing street!").showAndWait();
+			showErrorMessage("Missing street!");
 			streetTextField.requestFocus();
-			return;
+			return false;
 		}
 		if(newMember.getAddress().getCity().isEmpty()) {
-			new Alert(Alert.AlertType.WARNING, "Missing city!").showAndWait();
+			showErrorMessage("Missing city!");
 			cityTextField.requestFocus();
-			return;
+			return false;
 		}
 		if(newMember.getAddress().getState().isEmpty()) {
-			new Alert(Alert.AlertType.WARNING, "Missing state!").showAndWait();
+			showErrorMessage("Missing state!");
 			stateTextField.requestFocus();
-			return;
+			return false;
 		}
 		if(newMember.getAddress().getZip().isEmpty()) {
-			new Alert(Alert.AlertType.WARNING, "Missing zip code!").showAndWait();
+			showErrorMessage("Missing zip code!");
 			zipCodeTextField.requestFocus();
-			return;
+			return false;
 		}
 		if(newMember.getTelephone().isEmpty()) {
-			new Alert(Alert.AlertType.WARNING, "Missing telephone!").showAndWait();
+			showErrorMessage("Missing telephone!");
 			telePhoneTextField.requestFocus();
-			return;
+			return false;
 		}
 		
 		sysController.addLibraryMember(newMember);
+		return true;
 	}
-	private void doSelectMember() {
+	private boolean doSelectMember() {
 		LibraryMember selMember = tableMemberView.getSelectionModel().getSelectedItem();
+		if(selMember==null) {
+			showErrorMessage("Invalid cell selected!!!");
+			return false;
+		}
         memberIDTextField.setText(selMember.getMemberId());
         firstNameTextField.setText(selMember.getFirstName());
         lastNameTextField.setText(selMember.getLastName());
@@ -319,6 +347,8 @@ public class AddMemberWindow extends Stage implements LibWindow{
         stateTextField.setText(selMember.getAddress().getState());
         zipCodeTextField.setText(selMember.getAddress().getZip());
         telePhoneTextField.setText(selMember.getTelephone());
+        
+        return true;
 	}
 	
 	public void textFieldClear() {
@@ -330,5 +360,9 @@ public class AddMemberWindow extends Stage implements LibWindow{
         stateTextField.clear();
         zipCodeTextField.clear();
         telePhoneTextField.clear();
+	}
+	
+	private void showErrorMessage(String errorMsg) {		
+		errorMessageLabel.setText(errorMsg);
 	}
 }

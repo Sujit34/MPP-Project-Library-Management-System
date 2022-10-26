@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="619.0" prefWidth="829.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.BooksListTable">
+<AnchorPane style="-fx-background-color: whitesmoke;" prefHeight="619.0" prefWidth="829.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.BooksListTable">
    <children>
       <SplitPane layoutX="7.0" layoutY="8.0" orientation="VERTICAL" prefHeight="610.0" prefWidth="1038.0">
         <items>

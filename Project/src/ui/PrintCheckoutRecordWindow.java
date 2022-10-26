@@ -56,19 +56,19 @@ public class PrintCheckoutRecordWindow extends Stage implements LibWindow {
 		grid.setPadding(new Insets(25, 25, 25, 25));
 		grid.setStyle(Constants.GRID_COLOR);
 
-		Text label = new Text("Search member and print checkout records");
+		Text label = new Text("Member checkout records");
 		label.setFont(Font.font(Constants.FONT_TYPE, FontWeight.BOLD, 30));
 		label.setFill(Color.DARKRED);
 		HBox labelBox = new HBox(10);
 		labelBox.setAlignment(Pos.CENTER);
 		labelBox.getChildren().add(label);
-		grid.add(labelBox, 0, 0, 2, 1);
+		grid.add(labelBox, 0, 0, 3, 1);
 
 		Label memberIdLabel = new Label("Member Id:");
-		grid.add(memberIdLabel, 0, 1);
+		grid.add(memberIdLabel, 0, 1, 1, 1);
 
 		TextField memberIdTextField = new TextField();
-		grid.add(memberIdTextField, 1, 1);
+		grid.add(memberIdTextField, 1, 1, 1, 1);
 
 		memberIdTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
@@ -84,33 +84,34 @@ public class PrintCheckoutRecordWindow extends Stage implements LibWindow {
 		HBox hbBtn = new HBox(10);
 		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
 		hbBtn.getChildren().add(searchMemberBtn);
-		grid.add(hbBtn, 1, 2);
+		grid.add(hbBtn, 2, 1, 1, 1);
 
 		TableColumn<LibraryMember, String> memberIdCol = new TableColumn<>("ID");
-		memberIdCol.setMinWidth(150);
+		memberIdCol.setMinWidth(150);		
 		memberIdCol.setCellValueFactory(new PropertyValueFactory<LibraryMember, String>("memberId"));
 		memberIdCol.setCellFactory(TextFieldTableCell.forTableColumn());
 
 		TableColumn<LibraryMember, String> memberFirstNameCol = new TableColumn<>("First name");
-		memberFirstNameCol.setMinWidth(150);
+		memberFirstNameCol.setMinWidth(150);		
 		memberFirstNameCol.setCellValueFactory(new PropertyValueFactory<LibraryMember, String>("firstName"));
 		memberFirstNameCol.setCellFactory(TextFieldTableCell.forTableColumn());
 
 		TableColumn<LibraryMember, String> memberLastNameCol = new TableColumn<>("Last name");
-		memberLastNameCol.setMinWidth(150);
+		memberLastNameCol.setMinWidth(150);		
 		memberLastNameCol.setCellValueFactory(new PropertyValueFactory<LibraryMember, String>("lastName"));
 		memberLastNameCol.setCellFactory(TextFieldTableCell.forTableColumn());
 
 		tableMemberView.getColumns().clear();
 		tableMemberView.getColumns().addAll(memberIdCol, memberFirstNameCol, memberLastNameCol);
-		grid.add(tableMemberView, 1, 3);
+		grid.add(tableMemberView, 0, 2, 3, 1);
 
-		//this.bindMemberToList(ci.getAllLibraryMember());
+		
 		this.bindMemberToList(ci.getAllMemebers());
 
 		Text printToConsoleLabel = new Text("Hint: Double click on member to print checkout details");
 		printToConsoleLabel.setFill(Color.RED);
-		grid.add(printToConsoleLabel, 1, 4);
+		grid.add(printToConsoleLabel, 0, 3, 3, 1);
+		
 
 		Scene scene = new Scene(grid);
 
@@ -140,12 +141,10 @@ public class PrintCheckoutRecordWindow extends Stage implements LibWindow {
 
 	}
 	
-	private void doSearchMember(String memberId) {
-		//if (memberId != null && !memberId.isEmpty()) {
+	private void doSearchMember(String memberId) {		
 		if (!Utils.isEmpty(memberId)) {
 			bindMemberToList(ci.getLibraryMemberByID(memberId));
-		} else {
-			//bindMemberToList(ci.getAllLibraryMember());
+		} else {			
 			bindMemberToList(ci.getAllMemebers());
 		}
 	}

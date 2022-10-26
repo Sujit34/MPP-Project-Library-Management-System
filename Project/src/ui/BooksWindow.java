@@ -5,6 +5,7 @@ import java.net.URL;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.scene.paint.Color;
 
 
 public class BooksWindow extends Stage implements LibWindow {
@@ -22,12 +23,13 @@ public class BooksWindow extends Stage implements LibWindow {
     private BooksWindow () {}
     
     public void init()  {
+    	
         this.setTitle("Book List");
         try {
         	
             URL location = getClass().getResource("/ui/TableBooks.fxml");
             FXMLLoader fxmlLoader = new FXMLLoader(location);
-            Scene scene = new Scene(fxmlLoader.load());
+            Scene scene = new Scene(fxmlLoader.load());        
     		setScene(scene);
     		
     		

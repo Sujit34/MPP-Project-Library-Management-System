@@ -108,7 +108,7 @@ public class CheckoutWindow  implements Initializable{
 			
 			for(Book book: books) {
 				BookCopy copy = book.getNextAvailableCopy();
-				if(copy != null) { // check null 
+				if(copy != null) { 
 					MemberCheckoutsFactory.createCheckoutEntry(record, copy, LocalDate.now());
 					copy.changeAvailability();
 					book.updateCopies(copy);
@@ -122,7 +122,7 @@ public class CheckoutWindow  implements Initializable{
 			ButtonType okButton = new ButtonType("OK");
             Alert alert = new Alert(
             		Alert.AlertType.INFORMATION,
-            		"The Books was checkout correctly!!",
+            		"The Book was checkedout successfully!!",
             		okButton
             	);
             Window window = alert.getDialogPane().getScene().getWindow();

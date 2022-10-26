@@ -74,7 +74,8 @@ public class BooksListTable {
     
     
     @FXML
-    public void initialize() {
+    public void initialize() {  	
+    	
     	
     	tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     	

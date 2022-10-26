@@ -14,6 +14,7 @@ import business.SystemController;
 import business.constant.Constants;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessFacade;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -23,6 +24,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
@@ -43,6 +45,7 @@ public class AddBookWindow extends Stage implements LibWindow {
 
 	public static final AddBookWindow INSTANCE = new AddBookWindow();
 	private TableView<Author> tableAuthorView = new TableView<Author>();
+	private Label errorMessageLabel = new Label("");
 
 	private boolean isInitialized = false;
 
@@ -79,54 +82,60 @@ public class AddBookWindow extends Stage implements LibWindow {
 		grid.add(labelBox, 0, 0, 2, 1);
 
 		Label isbnLabel = new Label("ISBN number:");
-		grid.add(isbnLabel, 0, 1);
+		grid.add(isbnLabel, 0, 1, 1, 1);
 
 		TextField isbnTextField = new TextField();
-		grid.add(isbnTextField, 1, 1);
+		grid.add(isbnTextField, 1, 1, 1, 1);
 
 		Label titleLabel = new Label("Title:");
-		grid.add(titleLabel, 0, 2);
+		grid.add(titleLabel, 0, 2, 1, 1);
 
 		TextField titleTextField = new TextField();
-		grid.add(titleTextField, 1, 2);
+		grid.add(titleTextField, 1, 2, 1, 1);
 
-		Label checkoutLengthLabel = new Label("Max. checkout length:");
-		grid.add(checkoutLengthLabel, 0, 3);
+		Label checkoutLengthLabel = new Label("Checkout length:");
+		grid.add(checkoutLengthLabel, 0, 3, 1, 1);		
+		
+		ComboBox checkoutLengthComboBox = new ComboBox(FXCollections
+				 .observableArrayList(Constants.CHECK_OUT_LENGTH));
+		checkoutLengthComboBox.getSelectionModel().selectFirst();
+		grid.add(checkoutLengthComboBox, 1, 3, 1, 1);
 
-		TextField checkoutLengthTextField = new TextField();
-		grid.add(checkoutLengthTextField, 1, 3);
-
-		Label nbOfCopiesLabel = new Label("Number of copy:");
-		grid.add(nbOfCopiesLabel, 0, 4);
+		Label nbOfCopiesLabel = new Label("# Copies:");
+		grid.add(nbOfCopiesLabel, 0, 4, 1, 1);
 
 		TextField nbCopiesTextField = new TextField();
-		grid.add(nbCopiesTextField, 1, 4);
+		grid.add(nbCopiesTextField, 1, 4, 1, 1);
 
 		Label authorLabel = new Label("Authors:");
-		grid.add(authorLabel, 0, 5);
+		grid.add(authorLabel, 0, 5, 1, 1);
 
 		TableColumn<Author, String> authortFirstNameCol = new TableColumn<>("First name");
-		authortFirstNameCol.setMinWidth(150);
+		authortFirstNameCol.setMinWidth(130);
 		authortFirstNameCol.setCellValueFactory(new PropertyValueFactory<Author, String>("firstName"));
 
 		TableColumn<Author, String> authortLastNameCol = new TableColumn<>("Last name");
-		authortLastNameCol.setMinWidth(150);
+		authortLastNameCol.setMinWidth(130);
 		authortLastNameCol.setCellValueFactory(new PropertyValueFactory<Author, String>("firstName"));
 
 		TableColumn<Author, String> authorPhoneNameCol = new TableColumn<>("Phone");
-		authorPhoneNameCol.setMinWidth(150);
+		authorPhoneNameCol.setMinWidth(130);
 		authorPhoneNameCol.setCellValueFactory(new PropertyValueFactory<Author, String>("telephone"));
 
 		tableAuthorView.getColumns().clear();
 		tableAuthorView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		tableAuthorView.getColumns().addAll(authortFirstNameCol, authortLastNameCol, authorPhoneNameCol);
-		grid.add(tableAuthorView, 1, 5);
-
+		grid.add(tableAuthorView, 0, 6, 2, 1);
+		
+		
+		errorMessageLabel.setTextFill(Color.RED);
+		grid.add(errorMessageLabel, 0, 7, 1, 1);
+		
 		Button saveBtn = new Button("Save");
 		HBox hbBtn = new HBox(10);
 		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
 		hbBtn.getChildren().add(saveBtn);
-		grid.add(hbBtn, 1, 6);
+		grid.add(hbBtn, 1, 7, 3, 1);
 
 		Scene scene = new Scene(grid);
 
@@ -140,29 +149,26 @@ public class AddBookWindow extends Stage implements LibWindow {
 			public void handle(ActionEvent event) {
 				String isbn = isbnTextField.getText();
 				String title = titleTextField.getText();
-				String maxCheckoutLengthString = checkoutLengthTextField.getText();
+				String maxCheckoutLengthString = checkoutLengthComboBox.getValue().toString();
 
 				if (isbn.equals("") || title.equals("") || maxCheckoutLengthString.equals("")) {
-					showErrorMessage("Please input all fields");
+					showErrorMessage("All input fields are required.");
 					return;
-				}
-
-				int maxLength = Constants.MAX_DAY_BOOK_BORROWING;
-				if (maxCheckoutLengthString != null) {
-					try {
-						maxLength = Integer.parseInt(maxCheckoutLengthString);
-					} catch (NumberFormatException e) {
-						showErrorMessage("Max. Checkout Length is the number");
-						return;
-					}
-
-				}
+				}			
+				
+				int maxLength = Integer.parseInt(maxCheckoutLengthString);
 				String numberOfCopiesString = nbCopiesTextField.getText();
 				int nbOfcopy = 1;
 				if (numberOfCopiesString != null)
 					nbOfcopy = Integer.parseInt(numberOfCopiesString) - 1;
-
+				
+				tableAuthorView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 				Collection<Author> authors = tableAuthorView.getSelectionModel().getSelectedItems();
+				
+				if(authors.isEmpty()) {					
+					showErrorMessage("Author is not selected.");			
+					return;
+				}
 
 				ControllerInterface c = new SystemController();
 				Book book = new Book(isbn, title, maxLength, new ArrayList<>(authors));
@@ -170,9 +176,10 @@ public class AddBookWindow extends Stage implements LibWindow {
 					book.addCopy();
 
 				c.addBook(book);
+				showErrorMessage("");
 
 				Alert savedAlert = new Alert(AlertType.INFORMATION);
-				savedAlert.setHeaderText("The book was saved successfully.");
+				savedAlert.setHeaderText("The book was added successfully.");
 				Optional<ButtonType> option = savedAlert.showAndWait();
 
 				if (option.get() == ButtonType.OK) {
@@ -184,11 +191,8 @@ public class AddBookWindow extends Stage implements LibWindow {
 
 	}
 
-	private void showErrorMessage(String errorMsg) {
-		Alert alert = new Alert(AlertType.ERROR);
-		alert.setTitle("Input error");
-		alert.setHeaderText(errorMsg);
-		alert.show();
+	private void showErrorMessage(String errorMsg) {		
+		errorMessageLabel.setText(errorMsg);
 	}
 
 	private void bindAuthorToList() {
