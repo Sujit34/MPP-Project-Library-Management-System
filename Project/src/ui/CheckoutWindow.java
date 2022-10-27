@@ -41,7 +41,6 @@ import javafx.stage.Window;
 
 public class CheckoutWindow  implements Initializable{
 	
-	//Connect your UI ids from Java SceneBuilder
 	@FXML
     private TableView<Book> tableView;
 	
@@ -139,7 +138,7 @@ public class CheckoutWindow  implements Initializable{
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {		
-		
+		Start.primStage().setTitle("Checkout Window");
         ObservableList<LibraryMember> observableMembers = FXCollections.observableList(members);
 		membersComboBox.setItems(observableMembers);
 		

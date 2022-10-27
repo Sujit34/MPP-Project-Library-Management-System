@@ -65,7 +65,7 @@ public class AddBookWindow extends Stage implements LibWindow {
 	@Override
 	public void init() {	
 
-		this.setTitle("Add book");
+		this.setTitle("Add Book");
 		GridPane grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
 		grid.setHgap(10);
@@ -73,7 +73,7 @@ public class AddBookWindow extends Stage implements LibWindow {
 		grid.setPadding(new Insets(25, 25, 25, 25));
 		grid.setStyle(Constants.GRID_COLOR);
 
-		Text label = new Text("Add book");
+		Text label = new Text("Add Book");
 		label.setFont(Font.font(Constants.FONT_TYPE, FontWeight.BOLD, 30));
 		label.setFill(Color.DARKRED);
 		HBox labelBox = new HBox(10);

@@ -33,7 +33,7 @@ public class ConsoleViewWindow extends Stage implements LibWindow {
 
 	@Override
 	public void init() {
-		this.setTitle("Checkout records summary");
+		this.setTitle("Checkout Records Summary");
 
 		ControllerInterface ci = new SystemController();
 		AnchorPane panel = new AnchorPane();

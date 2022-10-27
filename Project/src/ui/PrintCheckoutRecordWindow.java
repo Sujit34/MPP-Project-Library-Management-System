@@ -56,7 +56,7 @@ public class PrintCheckoutRecordWindow extends Stage implements LibWindow {
 		grid.setPadding(new Insets(25, 25, 25, 25));
 		grid.setStyle(Constants.GRID_COLOR);
 
-		Text label = new Text("Member checkout records");
+		Text label = new Text("Member Checkout Records");
 		label.setFont(Font.font(Constants.FONT_TYPE, FontWeight.BOLD, 30));
 		label.setFill(Color.DARKRED);
 		HBox labelBox = new HBox(10);
