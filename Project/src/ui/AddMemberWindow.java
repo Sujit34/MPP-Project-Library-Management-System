@@ -101,8 +101,7 @@ public class AddMemberWindow extends Stage implements LibWindow{
 
 		telePhoneTextField = new NumberTextField();
 		grid.add(telePhoneTextField, 3, row, 1, 1);
-		telePhoneTextField.setMaxWidth(200);
-		//telePhoneTextField.
+		telePhoneTextField.setMaxWidth(200);		
 		
 		row++;
 		Label firstNameLabel = new Label("First Name:");
@@ -288,8 +287,7 @@ public class AddMemberWindow extends Stage implements LibWindow{
 	}
 	
 	private boolean addNewMember(LibraryMember newMember) {
-		if(newMember.getMemberId().isEmpty()) {
-			System.out.println(newMember.getMemberId());
+		if(newMember.getMemberId().isEmpty()) {			
 			showErrorMessage("Missing member id!");
 			memberIDTextField.requestFocus();
 			return false;
