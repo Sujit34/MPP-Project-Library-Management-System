@@ -73,7 +73,7 @@ public class Start extends Application {
 		labelBox.getChildren().add(label);
 		grid.add(labelBox, 0, 0, 2, 1);
 
-		Label userName = new Label("User Name:");
+		Label userName = new Label("Username:");
 		grid.add(userName, 0, 1);
 
 		TextField userTextField = new TextField();

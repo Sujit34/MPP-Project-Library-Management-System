@@ -69,7 +69,6 @@ public class BooksListTable {
     final Image availableImage = new Image("/ui/available.png");
     final Image unavailableImage = new Image("/ui/unavailable.png");
     
-    DataAccess da = new DataAccessFacade();
     ControllerInterface ci = new SystemController();
     
     
@@ -214,7 +213,7 @@ public class BooksListTable {
                        
                             if (option.get() == ButtonType.OK) {
                             	data.addCopy();
-                            	da.saveBook(data);
+                            	ci.addBook(data);
                             	tableView.getItems().clear();
                             	tableView.getItems().setAll(ci.getAllBooks());	
                             }
